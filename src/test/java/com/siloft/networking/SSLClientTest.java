@@ -31,11 +31,11 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
- * Verifies whether the <code>SSLServer</code> class is working properly.
+ * Verifies whether the <code>SSLClient</code> class is working properly.
  *
  * @author Sander Veldhuis
  */
-public class SSLServerTest {
+public class SSLClientTest {
 
     /**
      * Test whether invalid key store is not accepted.
@@ -43,7 +43,7 @@ public class SSLServerTest {
     @Test
     public void testInvalidName() {
         try {
-            new SSLServer("", null, null);
+            new SSLClient("", 0, null, null);
             assert false;
         } catch (Exception e) {
             assert e.getClass() == IllegalArgumentException.class;
@@ -56,44 +56,28 @@ public class SSLServerTest {
      */
     @Test
     public void testGetters() {
-        SSLServer server1 = new SSLServer("Test1", "Test2", "Test3");
-        assert server1.getName() == "Test1";
-        assert server1.getPort() == 0;
-        assert server1.getQueueLength() == 50;
-        assert server1.getBindAddress() == null;
-        assert server1.getKeyStore() == "Test2";
-        assert server1.getKeyStorePass() == "Test3";
-        assert server1.isConnected() == false;
-
-        SSLServer server2 = new SSLServer("Test", 65535, "Test2", "Test3");
-        assert server2.getName() == "Test";
-        assert server2.getPort() == 65535;
-        assert server2.getQueueLength() == 50;
-        assert server2.getBindAddress() == null;
-        assert server2.getKeyStore() == "Test2";
-        assert server2.getKeyStorePass() == "Test3";
-        assert server2.isConnected() == false;
-
-        SSLServer server3 = new SSLServer("Test", 65535, 1, "Test2", "Test3");
-        assert server3.getName() == "Test";
-        assert server3.getPort() == 65535;
-        assert server3.getQueueLength() == 1;
-        assert server3.getBindAddress() == null;
-        assert server3.getKeyStore() == "Test2";
-        assert server3.getKeyStorePass() == "Test3";
-        assert server3.isConnected() == false;
-
         try {
+            SSLClient client1 = new SSLClient("Test1", 1, "Test2", "Test3");
+            assert client1.getName() == "Test1";
+            assert client1.getPort() == 0;
+            assert client1.getAddress() == null;
+            assert client1.getServerPort() == 1;
+            assert client1.getServerAddress() == InetAddress.getLocalHost();
+            assert client1.getKeyStore() == "Test2";
+            assert client1.getKeyStorePass() == "Test3";
+            assert client1.isConnected() == false;
+
             InetAddress inetAddress = InetAddress.getLocalHost();
-            SSLServer server4 = new SSLServer("Test", 65535, 1, inetAddress,
-                    "Test2", "Test3");
-            assert server4.getName() == "Test";
-            assert server4.getPort() == 65535;
-            assert server4.getQueueLength() == 1;
-            assert server4.getBindAddress() == inetAddress;
-            assert server4.getKeyStore() == "Test2";
-            assert server4.getKeyStorePass() == "Test3";
-            assert server4.isConnected() == false;
+            SSLClient client2 =
+                    new SSLClient("Test", 65535, inetAddress, "Test2", "Test3");
+            assert client2.getName() == "Test";
+            assert client2.getPort() == 0;
+            assert client2.getAddress() == null;
+            assert client2.getServerPort() == 65535;
+            assert client2.getServerAddress() == inetAddress;
+            assert client1.getKeyStore() == "Test2";
+            assert client1.getKeyStorePass() == "Test3";
+            assert client1.isConnected() == false;
         } catch (UnknownHostException e) {
             assert false;
         }
@@ -106,8 +90,8 @@ public class SSLServerTest {
     @Ignore("If key store is loaded before a new one does not work")
     public void testConnectingInvalidKeyStore() {
         try {
-            SSLServer server = new SSLServer("Test1", "Test2", "Test3");
-            server.connect();
+            SSLClient client = new SSLClient("Test1", 0, "Test2", "Test3");
+            client.connect();
             assert false;
         } catch (Exception e) {
             assert e.getClass() == SocketException.class;
@@ -115,33 +99,44 @@ public class SSLServerTest {
     }
 
     /**
-     * Test connecting and disconnecting the server.
+     * Test connecting and disconnecting the client.
      */
     @Test
     public void testConnectingDisconnecting() {
         new JFXPanel(); // JavaFX should be initialized
 
-        SSLServer server = new SSLServer("Test1",
+        SSLServer server = new SSLServer("Test",
                 "src/test/resources/com/siloft/networking/SSLServerTest-Server.jks",
                 "123456");
+        try {
+            server.connect();
+        } catch (Exception e) {
+            assert false;
+        }
 
         try {
-            assert server.isConnected() == false;
-            assert server.getPort() == 0;
+            SSLClient client = new SSLClient("Test1", server.getPort(),
+                    "src/test/resources/com/siloft/networking/SSLServerTest-Client.jks",
+                    "123456");
 
-            server.connect();
-            assert server.isConnected() == true;
-            assert server.getPort() != 0;
+            assert client.isConnected() == false;
+            assert client.getPort() == 0;
 
-            server.connect();
-            assert server.isConnected() == true;
-            assert server.getPort() != 0;
+            client.connect();
+            assert client.isConnected() == true;
+            assert client.getPort() != 0;
+
+            client.connect();
+            assert client.isConnected() == true;
+            assert client.getPort() != 0;
+
+            client.disconnect();
+            assert client.isConnected() == false;
+            assert client.getPort() == 0;
         } catch (Exception e) {
             assert false;
         }
 
         server.disconnect();
-        assert server.isConnected() == false;
-        assert server.getPort() == 0;
     }
 }

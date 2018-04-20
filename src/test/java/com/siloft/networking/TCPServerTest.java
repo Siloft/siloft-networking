@@ -22,17 +22,16 @@
 
 package com.siloft.networking;
 
+import javafx.embed.swing.JFXPanel;
+import org.junit.Test;
+
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import org.junit.Test;
-
-import javafx.embed.swing.JFXPanel;
-
 /**
  * Verifies whether the <code>TCPServer</code> class is working properly.
- * 
+ *
  * @author Sander Veldhuis
  */
 public class TCPServerTest {
@@ -151,14 +150,13 @@ public class TCPServerTest {
     }
 
     /**
-     * Test accepting a client.
+     * Test accepting a client and client disconnects.
      */
     @Test
     public void testAcceptingClientDisconnects() {
         new JFXPanel(); // JavaFX should be initialized
 
         TCPServer server = new TCPServer("Test");
-
         try {
             server.connect();
             assert server.isConnected() == true;
@@ -189,7 +187,7 @@ public class TCPServerTest {
     }
 
     /**
-     * Test accepting a client.
+     * Test accepting a client and server disconnects.
      */
     @Test
     public void testAcceptingServerDisconnects() {
@@ -225,7 +223,7 @@ public class TCPServerTest {
     }
 
     /**
-     * Test accepting a client.
+     * Test accepting a client and server disconnects client.
      */
     @Test
     public void testAcceptingClientDisconnected() {

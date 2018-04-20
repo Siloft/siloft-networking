@@ -22,14 +22,16 @@
 
 package com.siloft.networking;
 
+import org.junit.Test;
+
+import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-
-import org.junit.Test;
+import java.util.List;
 
 /**
  * Verifies whether the <code>TransmitTask</code> class is working properly.
- * 
+ *
  * @author Sander Veldhuis
  */
 public class TransmitTaskTest {
@@ -37,17 +39,29 @@ public class TransmitTaskTest {
     /**
      * Test whether <code>null</code> is not accepted as socket.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullPointerException1() {
-        new TransmitTask(null, null);
+        try {
+            new TransmitTask(null, null);
+            assert false;
+        } catch (Exception e) {
+            assert e.getClass() == NullPointerException.class;
+            assert e.getMessage() == "Socket is null";
+        }
     }
 
     /**
      * Test whether <code>null</code> is not accepted as packet list.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullPointerException2() {
-        new TransmitTask(new Socket(), null);
+        try {
+            new TransmitTask(new Socket(), null);
+            assert false;
+        } catch (Exception e) {
+            assert e.getClass() == NullPointerException.class;
+            assert e.getMessage() == "Packet list is null";
+        }
     }
 
     /**
@@ -56,5 +70,20 @@ public class TransmitTaskTest {
     @Test
     public void testConstructor() {
         new TransmitTask(new Socket(), new ArrayList<TCPPacket>());
+    }
+
+    /**
+     * Test call.
+     */
+    @Test
+    public void call() {
+        TransmitTask task =
+                new TransmitTask(new Socket(), new ArrayList<TCPPacket>());
+        try {
+            List<TCPPacket> packets = task.call();
+            assert packets.size() == 0;
+        } catch (IOException exception) {
+            assert false;
+        }
     }
 }

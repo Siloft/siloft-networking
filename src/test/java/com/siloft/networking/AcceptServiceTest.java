@@ -22,17 +22,15 @@
 
 package com.siloft.networking;
 
-import java.io.IOException;
+import javafx.concurrent.Task;
+import org.junit.Test;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import org.junit.Test;
-
-import javafx.concurrent.Task;
-
 /**
  * Verifies whether the <code>AcceptService</code> class is working properly.
- * 
+ *
  * @author Sander Veldhuis
  */
 public class AcceptServiceTest {
@@ -40,9 +38,15 @@ public class AcceptServiceTest {
     /**
      * Test whether <code>null</code> is not accepted.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullPointerException() {
-        new AcceptService(null);
+        try {
+            new AcceptService(null);
+            assert false;
+        } catch (Exception e) {
+            assert e.getClass() == NullPointerException.class;
+            assert e.getMessage() == "Socket is null";
+        }
     }
 
     /**
@@ -52,7 +56,7 @@ public class AcceptServiceTest {
     public void testConstructor() {
         try {
             new AcceptService(new ServerSocket());
-        } catch (IOException e) {
+        } catch (Exception e) {
             assert false;
         }
     }
@@ -67,7 +71,7 @@ public class AcceptServiceTest {
             Task<Socket> task = service.createTask();
 
             assert task != null;
-        } catch (IOException e) {
+        } catch (Exception e) {
             assert false;
         }
     }

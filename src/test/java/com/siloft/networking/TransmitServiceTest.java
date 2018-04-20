@@ -22,16 +22,15 @@
 
 package com.siloft.networking;
 
+import javafx.concurrent.Task;
+import org.junit.Test;
+
 import java.net.Socket;
 import java.util.List;
 
-import org.junit.Test;
-
-import javafx.concurrent.Task;
-
 /**
  * Verifies whether the <code>TransmitService</code> class is working properly.
- * 
+ *
  * @author Sander Veldhuis
  */
 public class TransmitServiceTest {
@@ -39,9 +38,15 @@ public class TransmitServiceTest {
     /**
      * Test whether <code>null</code> is not accepted.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullPointerException() {
-        new TransmitService(null);
+        try {
+            new TransmitService(null);
+            assert false;
+        } catch (Exception e) {
+            assert e.getClass() == NullPointerException.class;
+            assert e.getMessage() == "Socket is null";
+        }
     }
 
     /**

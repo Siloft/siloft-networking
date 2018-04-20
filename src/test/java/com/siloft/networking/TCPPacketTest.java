@@ -34,17 +34,28 @@ public class TCPPacketTest {
     /**
      * Test whether <code>null</code> is not accepted.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullPointerException() {
-        new TCPPacket(null, 0);
+        try {
+            new TCPPacket(null, 0);
+            assert false;
+        } catch (Exception e) {
+            assert e.getClass() == NullPointerException.class;
+        }
     }
 
     /**
      * Test whether invalid length is not accepted.
      */
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testIllegalArgumentException() {
-        new TCPPacket(new byte[0], 1);
+        try {
+            new TCPPacket(new byte[0], 1);
+            assert false;
+        } catch (Exception e) {
+            assert e.getClass() == IllegalArgumentException.class;
+            assert e.getMessage() == "Invalid length";
+        }
     }
 
     /**

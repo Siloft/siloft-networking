@@ -22,15 +22,14 @@
 
 package com.siloft.networking;
 
-import java.net.Socket;
-
+import javafx.concurrent.Task;
 import org.junit.Test;
 
-import javafx.concurrent.Task;
+import java.net.Socket;
 
 /**
  * Verifies whether the <code>ReceiveService</code> class is working properly.
- * 
+ *
  * @author Sander Veldhuis
  */
 public class ReceiveServiceTest {
@@ -38,9 +37,15 @@ public class ReceiveServiceTest {
     /**
      * Test whether <code>null</code> is not accepted.
      */
-    @Test(expected = NullPointerException.class)
+    @Test
     public void testNullPointerException() {
-        new ReceiveService(null);
+        try {
+            new ReceiveService(null);
+            assert false;
+        } catch (Exception e) {
+            assert e.getClass() == NullPointerException.class;
+            assert e.getMessage() == "Socket is null";
+        }
     }
 
     /**
