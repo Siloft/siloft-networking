@@ -5,13 +5,14 @@
   <parent>
     <groupId>org.sonatype.oss</groupId>
     <artifactId>oss-parent</artifactId>
-    <version>7</version>
+    <version>9</version>
   </parent>
   <groupId>com.siloft</groupId>
   <artifactId>siloft-networking</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>A Java library for networking.</name>
+  <version>0.8.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+  <name>siloft-networking</name>
+  <description>A Java library for networking</description>
 
   <url>https://github.com/siloft/siloft-networking</url>
 
@@ -23,24 +24,24 @@
   <inceptionYear>2018</inceptionYear>
 
   <prerequisites>
-    <maven>2.0.9</maven>
+    <maven>3.0.3</maven>
   </prerequisites>
 
   <scm>
     <connection>scm:git:https://github.com/siloft/siloft-networking.git</connection>
-    <developerConnection>scm:git:ssh:git@github.com:siloft/siloft-networking.git</developerConnection>
+    <developerConnection>scm:git:git@github.com:siloft/siloft-networking.git</developerConnection>
     <url>https://github.com/siloft/siloft-networking</url>
   </scm>
 
   <organization>
     <name>Siloft</name>
-    <url>https://siloft.com/</url>
+    <url>https://siloft.com</url>
   </organization>
 
   <licenses>
     <license>
       <name>The MIT License</name>
-      <url>https://opensource.org/licenses/MIT</url>
+      <url>http://opensource.org/licenses/MIT</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -62,15 +63,16 @@
 
   <pluginRepositories>
     <pluginRepository>
+      <id>central</id>
+      <name>Central Repository</name>
+      <url>https://repo.maven.apache.org/maven2</url>
+      <layout>default</layout>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
-      <id>central</id>
-      <name>Central Repository</name>
-      <url>https://repo.maven.apache.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -81,6 +83,13 @@
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>com.oracle</groupId>
+      <artifactId>javafx</artifactId>
+      <version>2.1</version>
+      <systemPath>${java.home}/lib/ext/jfxrt.jar</systemPath>
+      <scope>system</scope>
+    </dependency>
   </dependencies>
 
   <properties>
@@ -90,8 +99,16 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <source>1.7<source>
+          <target>1.7<target>
+        </configuration>
+      </plugin>
+      <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>2.3.1</version>
+        <version>3.1.0</version>
         <configuration>
           <archive>
             <addMavenDescriptor>false</addMavenDescriptor>
@@ -103,16 +120,57 @@
         </configuration>
       </plugin>
       <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.2.1</version>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
+        <version>3.0.0</version>
+        <executions>
+          <execution>
+            <id>attach-javadoc</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <doctitle>${project.description} ${project.version}</doctitle>
+              <windowtitle>${project.artifactId} ${project.version}</windowtitle>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>animal-sniffer-maven-plugin</artifactId>
+        <version>1.16</version>
         <configuration>
-          <links>
-            <link>http://docs.oracle.com/javase/8/docs/api/</link>
-            <link>http://docs.oracle.com/javase/8/javafx/api/</link>
-          </links>
-          <doctitle>${project.name} ${project.version}</doctitle>
-          <windowtitle>${project.artifactId} ${project.version}</windowtitle>
+          <signature>
+            <groupId>org.codehaus.mojo.signature</groupId>
+            <artifactId>java17</artifactId>
+            <version>1.0</version>
+          </signature>
         </configuration>
+        <executions>
+          <execution>
+            <id>check-java-version-compatibility</id>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.21.0</version>
       </plugin>
       <plugin>
         <groupId>org.apache.felix</groupId>
@@ -127,22 +185,17 @@
             </goals>
           </execution>
         </executions>
-        <configuration>
-          <instructions>
-            <Bundle-DocURL>https://siloft.com/</Bundle-DocURL>
-            <Bundle-Description>${project.name}</Bundle-Description>
-            <Bundle-SymbolicName>com.siloft.siloft-networking</Bundle-SymbolicName>
-          </instructions>
-        </configuration>
       </plugin>
       <plugin>
-        <artifactId>maven-source-plugin</artifactId>
-        <version>2.1.2</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.5</version>
         <executions>
           <execution>
-            <id>source-jar</id>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
             <goals>
-              <goal>jar</goal>
+              <goal>sign</goal>
             </goals>
           </execution>
         </executions>

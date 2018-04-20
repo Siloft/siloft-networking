@@ -23,8 +23,8 @@ The library has the following features:
 ### <a name='requirements'>Requirements</a>
 
 The following requirements are attached to this library:
-  - Java 8 (or higher), standard (SE)
-  - JavaFX
+  - Java 7 (or higher), standard (SE)
+  - JavaFX 2.1 (or higher)
 
 ### <a name='generate_key_stores'>Generate key stores</a>
 
