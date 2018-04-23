@@ -92,7 +92,7 @@ To use Maven, add the following lines to your pom.xml file:
     <dependency>
       <groupId>com.siloft</groupId>
       <artifactId>siloft-networking</artifactId>
-      <version>0.0.1</version>
+      <version>0.8.0</version>
     </dependency>
   </dependencies>
 </project> 
