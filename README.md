@@ -19,6 +19,7 @@ The Siloft Networking library is an easy-to-use Java library which handles readi
 The library has the following features:
   - An TCP server and TCP client.
   - An SSL server and SSL client which can be used for SSL and TLS communication over TCP.
+  - Protocol support for easily defining, encoding, and decoding messages.
 
 ### <a name='requirements'>Requirements</a>
 
@@ -92,7 +93,7 @@ To use Maven, add the following lines to your pom.xml file:
     <dependency>
       <groupId>com.siloft</groupId>
       <artifactId>siloft-networking</artifactId>
-      <version>0.8.0</version>
+      <version>0.8.1</version>
     </dependency>
   </dependencies>
 </project> 

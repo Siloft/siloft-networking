@@ -62,6 +62,9 @@ public class TCPClient {
     /** The server address. */
     private final InetAddress serverAddress;
 
+    /** The protocol used for decoding packets. */
+    private TCPProtocol protocol;
+
     /** The service for receiving data from the server. */
     private ReceiveService receiveService;
 
@@ -235,6 +238,25 @@ public class TCPClient {
     }
 
     /**
+     * Returns the protocol of this TCP client.
+     *
+     * @return the protocol
+     */
+    public TCPProtocol getProtocol() {
+        return protocol;
+    }
+
+    /**
+     * Set the protocol of this TCP client.
+     *
+     * @param protocol
+     *            the protocol
+     */
+    public void setProtocol(TCPProtocol protocol) {
+        this.protocol = protocol;
+    }
+
+    /**
      * Indicates whether this TCP client is connected.
      *
      * @return <code>true</code> if connected, or <code>false</code> otherwise
@@ -300,17 +322,22 @@ public class TCPClient {
         if (!isConnected()) {
             return;
         }
-        TCPPacket packet = receiveService.getValue();
+        TCPPacket receivedPacket = receiveService.getValue();
 
         // End-of-stream means disconnected
-        if (packet.getLength() == -1) {
+        if (receivedPacket.getLength() == -1) {
             disconnect();
             return;
         }
 
-        // TODO: implement protocol decoder
-        for (ClientPacketListener listener : packetListeners) {
-            listener.received(name, packet);
+        TCPPacket[] packets = new TCPPacket[] { receivedPacket };
+        if (protocol != null) {
+            packets = protocol.decode(receivedPacket);
+        }
+        for (TCPPacket tcpPacket : packets) {
+            for (ClientPacketListener listener : packetListeners) {
+                listener.received(name, tcpPacket);
+            }
         }
 
         receiveService.restart();

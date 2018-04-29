@@ -74,6 +74,9 @@ public class TCPServer {
     private final Map<Integer, Socket> clientSockets =
             new HashMap<Integer, Socket>();
 
+    /** The protocol used for decoding packets. */
+    private TCPProtocol protocol;
+
     /** The service for accepting new clients. */
     private AcceptService acceptService;
 
@@ -403,6 +406,25 @@ public class TCPServer {
     }
 
     /**
+     * Returns the protocol of this TCP server.
+     *
+     * @return the protocol
+     */
+    public TCPProtocol getProtocol() {
+        return protocol;
+    }
+
+    /**
+     * Set the protocol of this TCP server.
+     *
+     * @param protocol
+     *            the protocol
+     */
+    public void setProtocol(TCPProtocol protocol) {
+        this.protocol = protocol;
+    }
+
+    /**
      * Indicates whether this TCP server is connected.
      *
      * @return <code>true</code> if connected, or <code>false</code> otherwise
@@ -520,17 +542,22 @@ public class TCPServer {
             if (service.getState() != State.SUCCEEDED) {
                 return;
             }
-            TCPPacket packet = service.getValue();
+            TCPPacket receivedPacket = service.getValue();
 
             // End-of-stream means disconnected
-            if (packet.getLength() == -1) {
+            if (receivedPacket.getLength() == -1) {
                 disconnect(id);
                 return;
             }
 
-            // TODO: implement protocol decoder
-            for (ServerPacketListener listener : packetListeners) {
-                listener.received(name, id, packet);
+            TCPPacket[] packets = new TCPPacket[] { receivedPacket };
+            if (protocol != null) {
+                packets = protocol.decode(receivedPacket);
+            }
+            for (TCPPacket tcpPacket : packets) {
+                for (ServerPacketListener listener : packetListeners) {
+                    listener.received(name, id, tcpPacket);
+                }
             }
 
             service.restart();
