@@ -200,9 +200,10 @@ public class SSLServer extends TCPServer {
             return;
         }
 
-        System.setProperty("javax.net.ssl.trustStore", keyStore);
         System.setProperty("javax.net.ssl.keyStore", keyStore);
-        System.setProperty("javax.net.ssl.keyStorePassword", keyStorePass);
+        if (keyStorePass != null) {
+            System.setProperty("javax.net.ssl.keyStorePassword", keyStorePass);
+        }
 
         SSLServerSocketFactory sslFactory =
                 (SSLServerSocketFactory) SSLServerSocketFactory.getDefault();

@@ -38,20 +38,6 @@ import java.net.UnknownHostException;
 public class SSLClientTest {
 
     /**
-     * Test whether invalid key store is not accepted.
-     */
-    @Test
-    public void testInvalidName() {
-        try {
-            new SSLClient("", 0, null, null);
-            assert false;
-        } catch (Exception e) {
-            assert e.getClass() == IllegalArgumentException.class;
-            assert e.getMessage() == "Invalid key store";
-        }
-    }
-
-    /**
      * Test constructors and getters.
      */
     @Test
@@ -63,8 +49,8 @@ public class SSLClientTest {
             assert client1.getAddress() == null;
             assert client1.getServerPort() == 1;
             assert client1.getServerAddress() == InetAddress.getLocalHost();
-            assert client1.getKeyStore() == "Test2";
-            assert client1.getKeyStorePass() == "Test3";
+            assert client1.getTrustStore() == "Test2";
+            assert client1.getTrustStorePass() == "Test3";
             assert client1.isConnected() == false;
 
             InetAddress inetAddress = InetAddress.getLocalHost();
@@ -75,8 +61,8 @@ public class SSLClientTest {
             assert client2.getAddress() == null;
             assert client2.getServerPort() == 65535;
             assert client2.getServerAddress() == inetAddress;
-            assert client1.getKeyStore() == "Test2";
-            assert client1.getKeyStorePass() == "Test3";
+            assert client1.getTrustStore() == "Test2";
+            assert client1.getTrustStorePass() == "Test3";
             assert client1.isConnected() == false;
         } catch (UnknownHostException e) {
             assert false;
@@ -87,8 +73,8 @@ public class SSLClientTest {
      * Test connecting with invalid key store.
      */
     @Test
-    @Ignore("If key store is loaded before a new one does not work")
-    public void testConnectingInvalidKeyStore() {
+    @Ignore("If trust store is loaded before a new one does not work")
+    public void testConnectingInvalidTrustStore() {
         try {
             SSLClient client = new SSLClient("Test1", 0, "Test2", "Test3");
             client.connect();
@@ -102,6 +88,7 @@ public class SSLClientTest {
      * Test connecting and disconnecting the client.
      */
     @Test
+    @Ignore("If trust store is loaded before a new one does not work")
     public void testConnectingDisconnecting() {
         new JFXPanel(); // JavaFX should be initialized
 

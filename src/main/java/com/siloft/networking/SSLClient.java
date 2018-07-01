@@ -49,40 +49,95 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class SSLClient extends TCPClient {
 
-    /** The key store. */
-    private final String keyStore;
+    /** The trust store used to verify identity of server. */
+    private final String trustStore;
 
-    /** The key store password. */
-    private final String keyStorePass;
+    /** The trust store password. */
+    private final String trustStorePass;
 
     /**
      * Constructs a new SSL client, that connects to the specified server port
      * on the local machine. The port must be between 0 and 65535, inclusive.
+     * <p>
+     * The trust store is used to verify the identity of the server. The default
+     * trust store from the Java Runtime Environment will be used.
      *
      * @param name
      *            the client name
      * @param serverPort
      *            the server port number
-     * @param keyStore
-     *            the key store
-     * @param keyStorePass
-     *            the key store password
      *
      * @exception IllegalArgumentException
-     *                if the name, server port, or key store is invalid
+     *                if the name or server port is invalid
      * @exception UnknownHostException
      *                if the local host name could not be resolved into an
      *                address
      */
-    public SSLClient(String name, int serverPort, String keyStore,
-            String keyStorePass) throws UnknownHostException {
-        this(name, serverPort, InetAddress.getLocalHost(), keyStore,
-                keyStorePass);
+    public SSLClient(String name, int serverPort) throws UnknownHostException {
+        this(name, serverPort, InetAddress.getLocalHost(), null, null);
+    }
+
+    /**
+     * Constructs a new SSL client, that connects to the specified server port
+     * on the local machine. The port must be between 0 and 65535, inclusive.
+     * <p>
+     * The trust store is used to verify the identity of the server. If the
+     * trust store is set to <code>null</code> the default trust store from the
+     * Java Runtime Environment will be used.
+     *
+     * @param name
+     *            the client name
+     * @param serverPort
+     *            the server port number
+     * @param trustStore
+     *            the trust store
+     *
+     * @exception IllegalArgumentException
+     *                if the name or server port is invalid
+     * @exception UnknownHostException
+     *                if the local host name could not be resolved into an
+     *                address
+     */
+    public SSLClient(String name, int serverPort, String trustStore)
+            throws UnknownHostException {
+        this(name, serverPort, InetAddress.getLocalHost(), trustStore, null);
+    }
+
+    /**
+     * Constructs a new SSL client, that connects to the specified server port
+     * on the local machine. The port must be between 0 and 65535, inclusive.
+     * <p>
+     * The trust store is used to verify the identity of the server. If the
+     * trust store is set to <code>null</code> the default trust store from the
+     * Java Runtime Environment will be used.
+     *
+     * @param name
+     *            the client name
+     * @param serverPort
+     *            the server port number
+     * @param trustStore
+     *            the trust store
+     * @param trustStorePass
+     *            the trust store password
+     *
+     * @exception IllegalArgumentException
+     *                if the name or server port is invalid
+     * @exception UnknownHostException
+     *                if the local host name could not be resolved into an
+     *                address
+     */
+    public SSLClient(String name, int serverPort, String trustStore,
+            String trustStorePass) throws UnknownHostException {
+        this(name, serverPort, InetAddress.getLocalHost(), trustStore,
+                trustStorePass);
     }
 
     /**
      * Constructs a new SSL client, that connects to the specified server port
      * and server address. The port must be between 0 and 65535, inclusive.
+     * <p>
+     * The trust store is used to verify the identity of the server. The default
+     * trust store from the Java Runtime Environment will be used.
      *
      * @param name
      *            the client name
@@ -90,23 +145,66 @@ public class SSLClient extends TCPClient {
      *            the server port number
      * @param serverAddress
      *            the server InetAddress
-     * @param keyStore
-     *            the key store
-     * @param keyStorePass
-     *            the key store password
      *
      * @exception IllegalArgumentException
-     *                if the name, server port, server address, or key store is
-     *                invalid
+     *                if the name, server port, or server address is invalid
+     */
+    public SSLClient(String name, int serverPort, InetAddress serverAddress) {
+        this(name, serverPort, serverAddress, null, null);
+    }
+
+    /**
+     * Constructs a new SSL client, that connects to the specified server port
+     * and server address. The port must be between 0 and 65535, inclusive.
+     * <p>
+     * The trust store is used to verify the identity of the server. If the
+     * trust store is set to <code>null</code> the default trust store from the
+     * Java Runtime Environment will be used.
+     *
+     * @param name
+     *            the client name
+     * @param serverPort
+     *            the server port number
+     * @param serverAddress
+     *            the server InetAddress
+     * @param trustStore
+     *            the trust store
+     *
+     * @exception IllegalArgumentException
+     *                if the name, server port, or server address is invalid
      */
     public SSLClient(String name, int serverPort, InetAddress serverAddress,
-            String keyStore, String keyStorePass) {
+            String trustStore) {
+        this(name, serverPort, serverAddress, trustStore, null);
+    }
+
+    /**
+     * Constructs a new SSL client, that connects to the specified server port
+     * and server address. The port must be between 0 and 65535, inclusive.
+     * <p>
+     * The trust store is used to verify the identity of the server. If the
+     * trust store is set to <code>null</code> the default trust store from the
+     * Java Runtime Environment will be used.
+     *
+     * @param name
+     *            the client name
+     * @param serverPort
+     *            the server port number
+     * @param serverAddress
+     *            the server InetAddress
+     * @param trustStore
+     *            the trust store
+     * @param trustStorePass
+     *            the trust store password
+     *
+     * @exception IllegalArgumentException
+     *                if the name, server port, or server address is invalid
+     */
+    public SSLClient(String name, int serverPort, InetAddress serverAddress,
+            String trustStore, String trustStorePass) {
         super(name, serverPort, serverAddress);
-        if (keyStore == null) {
-            throw new IllegalArgumentException("Invalid key store");
-        }
-        this.keyStore = keyStore;
-        this.keyStorePass = keyStorePass;
+        this.trustStore = trustStore;
+        this.trustStorePass = trustStorePass;
     }
 
     /**
@@ -127,9 +225,13 @@ public class SSLClient extends TCPClient {
             return;
         }
 
-        System.setProperty("javax.net.ssl.trustStore", keyStore);
-        System.setProperty("javax.net.ssl.keyStore", keyStore);
-        System.setProperty("javax.net.ssl.keyStorePassword", keyStorePass);
+        if (trustStore != null) {
+            System.setProperty("javax.net.ssl.trustStore", trustStore);
+        }
+        if (trustStorePass != null) {
+            System.setProperty("javax.net.ssl.trustStorePassword",
+                    trustStorePass);
+        }
 
         SSLSocketFactory sslFactory =
                 (SSLSocketFactory) SSLSocketFactory.getDefault();
@@ -140,20 +242,20 @@ public class SSLClient extends TCPClient {
     }
 
     /**
-     * Returns the key store of this SSL client.
+     * Returns the trust store of this SSL client.
      *
-     * @return the key store
+     * @return the trust store
      */
-    public synchronized String getKeyStore() {
-        return keyStore;
+    public synchronized String getTrustStore() {
+        return trustStore;
     }
 
     /**
-     * Returns the key store password of this SSL client.
+     * Returns the trust store password of this SSL client.
      *
-     * @return the key store password
+     * @return the trust store password
      */
-    public synchronized String getKeyStorePass() {
-        return keyStorePass;
+    public synchronized String getTrustStorePass() {
+        return trustStorePass;
     }
 }
