@@ -24,11 +24,9 @@ package com.siloft.networking;
 
 import javafx.concurrent.Task;
 
-import java.io.BufferedReader;
+import java.io.BufferedInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 /**
  * A cancellable asynchronous computation which will wait till new data is
@@ -64,14 +62,13 @@ final class ReceiveTask extends Task<TCPPacket> {
      */
     @Override
     protected TCPPacket call() throws IOException {
-        char[] buffer = new char[socket.getReceiveBufferSize()];
+        byte[] buffer = new byte[socket.getReceiveBufferSize()];
 
-        BufferedReader reader = new BufferedReader(
-                new InputStreamReader(socket.getInputStream()));
-        int length = reader.read(buffer);
+        BufferedInputStream stream =
+                new BufferedInputStream(socket.getInputStream());
+        int length = stream.read(buffer);
         // Do not close reader because causes close of socket
 
-        byte[] bytes = new String(buffer).getBytes(StandardCharsets.UTF_8);
-        return new TCPPacket(bytes, length);
+        return new TCPPacket(buffer, length);
     }
 }

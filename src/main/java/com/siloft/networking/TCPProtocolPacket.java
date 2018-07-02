@@ -46,8 +46,8 @@ import java.util.Arrays;
  * <li><code>float</code> - uses 32 bits during transmission</li>
  * <li><code>double</code> - uses 64 bits during transmission</li>
  * <li><code>boolean</code> - uses 8 bits during transmission</li>
- * <li><code>String</code> - uses 8*n+8 bits during transmission</li>
- * <li><code>byte[]</code> - uses 8*n+8 bits during transmission</li>
+ * <li><code>String</code> - uses 16*n+8 bits during transmission</li>
+ * <li><code>byte[]</code> - uses 16*n+8 bits during transmission</li>
  * </ul>
  * <p>
  * To define fields in a TCP protocol packet use the following parameter
@@ -111,10 +111,10 @@ public class TCPProtocolPacket extends TCPPacket {
     private static final int BOOLEAN_LENGTH = 1;
 
     /** The length of the <code>String</code> type. */
-    private static final int STRING_LENGTH = 1;
+    private static final int STRING_LENGTH = 2;
 
     /** The length of the <code>byte[]</code> type. */
-    private static final int BYTE_ARRAY_LENGTH = 1;
+    private static final int BYTE_ARRAY_LENGTH = 2;
 
     /**
      * Constructs a new TCP protocol packet.
@@ -221,7 +221,8 @@ public class TCPProtocolPacket extends TCPPacket {
                     if (length - i < STRING_LENGTH) {
                         return null;
                     }
-                    byte len = data[i++];
+                    short len = ByteBuffer.wrap(data, i, length - i).getShort();
+                    i += STRING_LENGTH;
                     if (length - i < len) {
                         return null;
                     }
@@ -233,7 +234,8 @@ public class TCPProtocolPacket extends TCPPacket {
                     if (length - i < BYTE_ARRAY_LENGTH) {
                         return null;
                     }
-                    byte len = data[i++];
+                    short len = ByteBuffer.wrap(data, i, length - i).getShort();
+                    i += BYTE_ARRAY_LENGTH;
                     if (length - i < len) {
                         return null;
                     }
@@ -300,7 +302,8 @@ public class TCPProtocolPacket extends TCPPacket {
                         buffer.put((byte) 0);
                     } else {
                         bytes = value.getBytes(StandardCharsets.UTF_8);
-                        buffer.put((byte) bytes.length);
+                        buffer.put(ByteBuffer.allocate(STRING_LENGTH)
+                                .putShort((short) bytes.length).array());
                     }
                 } else if (typeName.equals(BYTE_ARRAY_TYPE)) {
                     byte[] value = (byte[]) field.get(this);
@@ -308,7 +311,8 @@ public class TCPProtocolPacket extends TCPPacket {
                         buffer.put((byte) 0);
                     } else {
                         bytes = value;
-                        buffer.put((byte) bytes.length);
+                        buffer.put(ByteBuffer.allocate(BYTE_ARRAY_LENGTH)
+                                .putShort((short) bytes.length).array());
                     }
                 }
 
