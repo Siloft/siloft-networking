@@ -340,7 +340,9 @@ public class TCPClient {
             }
         }
 
-        receiveService.restart();
+        if (receiveService != null) {
+            receiveService.restart();
+        }
     }
 
     /**
