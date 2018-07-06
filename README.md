@@ -105,6 +105,7 @@ The list below indicates which future improvements are planned. This does not me
 
 1. Drop client connections which did not finished the SSL Handshake in time.
 2. Improve error handling to give better indications of failures.
+3. Validate all added protocol messages operation code to prevent double operation codes
 
 ## <a name='license'>License</a>
 
