@@ -71,6 +71,10 @@ public class TCPClient {
     /** The service for transmitting data to the server. */
     private TransmitService transmitService;
 
+    /** List containing all listeners triggered upon disconnection. */
+    private final List<ClientDisconnectedListener> disconnectedListeners =
+            new ArrayList<ClientDisconnectedListener>();
+
     /** List containing all listeners triggered upon newly received packets. */
     private final List<ClientPacketListener> packetListeners =
             new ArrayList<ClientPacketListener>();
@@ -146,6 +150,12 @@ public class TCPClient {
      * Tries to stop this TCP client connection.
      */
     public void disconnect() {
+        if (socket != null) {
+            for (ClientDisconnectedListener listener : disconnectedListeners) {
+                listener.disconnected(name);
+            }
+        }
+
         try {
             socket.close();
         } catch (Exception e) {
@@ -168,6 +178,29 @@ public class TCPClient {
         }
         transmitService.enqueue(packet);
         transmitService.restart();
+    }
+
+    /**
+     * Add a disconnected listener to this TCP client. The listener will be
+     * triggered upon disconnection.
+     *
+     * @param listener
+     *            the listener
+     */
+    public synchronized void addDisconnectedListener(
+            ClientDisconnectedListener listener) {
+        disconnectedListeners.add(listener);
+    }
+
+    /**
+     * Remove a disconnected listener from this TCP client.
+     *
+     * @param listener
+     *            the listener
+     */
+    public synchronized void removeDisconnectedListener(
+            ClientDisconnectedListener listener) {
+        disconnectedListeners.remove(listener);
     }
 
     /**

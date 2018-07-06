@@ -36,6 +36,7 @@ import java.io.IOException;
  */
 public class SSLClientExample extends Application
         implements
+            ClientDisconnectedListener,
             ClientPacketListener {
 
     /** The SSL client. */
@@ -80,6 +81,17 @@ public class SSLClientExample extends Application
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Invoked when disconnected.
+     *
+     * @param name
+     *            the client name
+     */
+    @Override
+    public void disconnected(String name) {
+        System.out.println("SSL client '" + name + "' disconnected");
     }
 
     /**

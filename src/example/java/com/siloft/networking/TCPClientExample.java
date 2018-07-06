@@ -36,6 +36,7 @@ import java.io.IOException;
  */
 public class TCPClientExample extends Application
         implements
+            ClientDisconnectedListener,
             ClientPacketListener {
 
     /** The TCP client. */
@@ -78,6 +79,17 @@ public class TCPClientExample extends Application
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Invoked when disconnected.
+     *
+     * @param name
+     *            the client name
+     */
+    @Override
+    public void disconnected(String name) {
+        System.out.println("TCP client '" + name + "' disconnected");
     }
 
     /**

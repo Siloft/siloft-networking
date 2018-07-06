@@ -89,12 +89,12 @@ public class TCPServer {
             new HashMap<Integer, TransmitService>();
 
     /** List containing all listeners triggered upon newly connected clients. */
-    private final List<ConnectedListener> connectedListeners =
-            new ArrayList<ConnectedListener>();
+    private final List<ServerConnectedListener> connectedListeners =
+            new ArrayList<ServerConnectedListener>();
 
     /** List containing all listeners triggered upon disconnected clients. */
-    private final List<DisconnectedListener> disconnectedListeners =
-            new ArrayList<DisconnectedListener>();
+    private final List<ServerDisconnectedListener> disconnectedListeners =
+            new ArrayList<ServerDisconnectedListener>();
 
     /** List containing all listeners triggered upon newly received packets. */
     private final List<ServerPacketListener> packetListeners =
@@ -269,7 +269,7 @@ public class TCPServer {
         if (!clientSockets.containsKey(id)) {
             return;
         }
-        for (DisconnectedListener listener : disconnectedListeners) {
+        for (ServerDisconnectedListener listener : disconnectedListeners) {
             listener.disconnected(name, id);
         }
 
@@ -309,7 +309,8 @@ public class TCPServer {
      * @param listener
      *            the listener
      */
-    public synchronized void addConnectedListener(ConnectedListener listener) {
+    public synchronized void addConnectedListener(
+            ServerConnectedListener listener) {
         connectedListeners.add(listener);
     }
 
@@ -320,7 +321,7 @@ public class TCPServer {
      *            the listener
      */
     public synchronized void removeConnectedListener(
-            ConnectedListener listener) {
+            ServerConnectedListener listener) {
         connectedListeners.remove(listener);
     }
 
@@ -332,7 +333,7 @@ public class TCPServer {
      *            the listener
      */
     public synchronized void addDisconnectedListener(
-            DisconnectedListener listener) {
+            ServerDisconnectedListener listener) {
         disconnectedListeners.add(listener);
     }
 
@@ -343,7 +344,7 @@ public class TCPServer {
      *            the listener
      */
     public synchronized void removeDisconnectedListener(
-            DisconnectedListener listener) {
+            ServerDisconnectedListener listener) {
         disconnectedListeners.remove(listener);
     }
 
@@ -521,7 +522,7 @@ public class TCPServer {
         createReceiveService(socket);
         createTransmitService(socket);
 
-        for (ConnectedListener listener : connectedListeners) {
+        for (ServerConnectedListener listener : connectedListeners) {
             listener.connected(name, socket.hashCode());
         }
     }

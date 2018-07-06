@@ -36,8 +36,8 @@ import java.io.IOException;
  */
 public class SSLServerExample extends Application
         implements
-            ConnectedListener,
-            DisconnectedListener,
+            ServerConnectedListener,
+            ServerDisconnectedListener,
             ServerPacketListener {
 
     /** The SSL server. */

@@ -25,19 +25,19 @@ package com.siloft.networking;
 import java.util.EventListener;
 
 /**
- * Interface that receives notifications of disconnected clients.
+ * Interface that receives notifications of newly connected clients.
  *
  * @author Sander Veldhuis
  */
-public interface DisconnectedListener extends EventListener {
+public interface ServerConnectedListener extends EventListener {
 
     /**
-     * Invoked after a client is disconnected.
+     * Invoked after a new client is connected.
      *
      * @param name
      *            the server name
      * @param id
      *            the client identifier
      */
-    public void disconnected(String name, int id);
+    public void connected(String name, int id);
 }

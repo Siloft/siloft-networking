@@ -36,8 +36,8 @@ import java.io.IOException;
  */
 public class TCPServerExample extends Application
         implements
-            ConnectedListener,
-            DisconnectedListener,
+            ServerConnectedListener,
+            ServerDisconnectedListener,
             ServerPacketListener {
 
     /** The TCP server. */
