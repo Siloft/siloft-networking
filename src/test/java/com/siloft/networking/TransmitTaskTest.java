@@ -27,7 +27,6 @@ import org.junit.Test;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Verifies whether the <code>TransmitTask</code> class is working properly.
@@ -80,8 +79,8 @@ public class TransmitTaskTest {
         TransmitTask task =
                 new TransmitTask(new Socket(), new ArrayList<TCPPacket>());
         try {
-            List<TCPPacket> packets = task.call();
-            assert packets.size() == 0;
+            TCPPacket packets = task.call();
+            assert packets == null;
         } catch (IOException exception) {
             assert false;
         }

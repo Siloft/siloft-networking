@@ -33,7 +33,7 @@ import java.util.List;
  * A cancellable asynchronous computation which will transmit the listed TCP
  * packets over the dedicated socket.
  */
-final class TransmitTask extends Task<List<TCPPacket>> {
+final class TransmitTask extends Task<TCPPacket> {
 
     /** The socket holding the connection. */
     private final Socket socket;
@@ -71,7 +71,7 @@ final class TransmitTask extends Task<List<TCPPacket>> {
      * cancellation of this task.
      */
     @Override
-    protected List<TCPPacket> call() throws IOException {
+    protected TCPPacket call() throws IOException {
         while (!packets.isEmpty()) {
             final TCPPacket packet = packets.remove(0);
 
@@ -79,7 +79,9 @@ final class TransmitTask extends Task<List<TCPPacket>> {
                     new DataOutputStream(socket.getOutputStream());
             writer.write(packet.getData(), 0, packet.getLength());
             // Do not close writer because causes close of socket
+
+            updateValue(packet);
         }
-        return packets;
+        return null;
     }
 }

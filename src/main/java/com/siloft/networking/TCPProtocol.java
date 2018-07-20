@@ -22,6 +22,7 @@
 
 package com.siloft.networking;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +35,9 @@ import java.util.List;
  */
 public abstract class TCPProtocol {
 
+    /** List of all op codes added to this TCP protocol. */
+    private final List<Short> opCodes;
+
     /** List of all TCP protocol packets added to this TCP protocol. */
     private final List<TCPProtocolPacket> packets;
 
@@ -43,11 +47,22 @@ public abstract class TCPProtocol {
      *
      * @param supportedPackets
      *            the supported TCP protocol packets
+     * @exception UnsupportedOperationException
+     *                if two or more supported TCP protocol packets have the
+     *                same op code
      */
     protected TCPProtocol(TCPProtocolPacket... supportedPackets) {
+        opCodes = new ArrayList<Short>();
         packets = new ArrayList<TCPProtocolPacket>();
 
         for (TCPProtocolPacket supportedPacket : supportedPackets) {
+            short opCode = ByteBuffer.wrap(supportedPacket.getData(), 0,
+                    supportedPacket.getLength()).getShort();
+            if (opCodes.contains(opCode)) {
+                throw new UnsupportedOperationException("Duplicate op code");
+            }
+
+            opCodes.add(opCode);
             packets.add(supportedPacket);
         }
     }

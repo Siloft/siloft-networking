@@ -26,7 +26,6 @@ import javafx.concurrent.Task;
 import org.junit.Test;
 
 import java.net.Socket;
-import java.util.List;
 
 /**
  * Verifies whether the <code>TransmitService</code> class is working properly.
@@ -73,7 +72,7 @@ public class TransmitServiceTest {
     public void testCreateTask() {
         TransmitService service = new TransmitService(new Socket());
 
-        Task<List<TCPPacket>> task = service.createTask();
+        Task<TCPPacket> task = service.createTask();
         assert task != null;
     }
 }

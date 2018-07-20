@@ -36,7 +36,7 @@ import java.util.List;
  *
  * @author Sander Veldhuis
  */
-final class TransmitService extends Service<List<TCPPacket>> {
+final class TransmitService extends Service<TCPPacket> {
 
     /** The socket holding the connection. */
     private final Socket socket;
@@ -77,13 +77,19 @@ final class TransmitService extends Service<List<TCPPacket>> {
      * @return the created <code>TransmitTask</code>
      */
     @Override
-    protected Task<List<TCPPacket>> createTask() {
+    protected Task<TCPPacket> createTask() {
         final List<TCPPacket> packets =
                 Collections.synchronizedList(new LinkedList<TCPPacket>());
 
         packets.addAll(queue);
-        queue.clear();
 
-        return new TransmitTask(socket, packets);
+        TransmitTask task = new TransmitTask(socket, packets);
+        task.valueProperty().addListener((listener) -> {
+            if (task.getValue() != null) {
+                queue.remove(task.getValue());
+            }
+        });
+
+        return task;
     }
 }

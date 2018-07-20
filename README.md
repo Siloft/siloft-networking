@@ -93,7 +93,7 @@ To use Maven, add the following lines to your pom.xml file:
     <dependency>
       <groupId>com.siloft</groupId>
       <artifactId>siloft-networking</artifactId>
-      <version>0.8.5</version>
+      <version>0.8.6</version>
     </dependency>
   </dependencies>
 </project> 
@@ -103,9 +103,7 @@ To use Maven, add the following lines to your pom.xml file:
 
 The list below indicates which future improvements are planned. This does not mean they will be implemented.
 
-1. Drop client connections which did not finished the SSL Handshake in time.
-2. Improve error handling to give better indications of failures.
-3. Validate all added protocol messages operation code to prevent double operation codes
+1. Improve error handling to give better indications of failures.
 
 ## <a name='license'>License</a>
 
